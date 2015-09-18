@@ -1,0 +1,19 @@
+--- 
+days_check: false
+start_minimized: false
+minutes: 10
+autodetect_ip: true
+days: 1
+newver: true
+connect: false
+service: true
+remember_id: true
+hours_check: false
+remember_pass: true
+id: ""
+type: 1
+start_onboot: true
+lang: en
+hours: 12
+pass: ""
+minutes_check: true

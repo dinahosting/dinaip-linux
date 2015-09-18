@@ -1,0 +1,74 @@
+user: User
+identifier: Identifier
+password: Password
+domain: Domain
+remember_id: Remember identifier
+remember_pass: Remember password
+cancel: Cancel
+accept: Accept
+newver: Check if there is a new version
+connect_auto: Connect automatically at startup
+login: Login
+add_domain: Add a domain
+add_domain_msg: Please choose a domain from the list
+host: Host
+type_label: Type
+value: Value
+option: Option
+dynamic: Dynamic IP
+delete: Delete
+connect: Connect
+save_conf: Export configuration
+load_conf: Import configuration
+file: File
+exit: Exit
+resume_service: Resume service
+stop_service: Stop service
+options: Options
+tools: Tools
+help: Help
+about: About
+start_onboot: Run with window manager
+start_minimized: Init minimized
+autodetect_ip: Autodetect dynamic IPs
+discard_changes: Discard changes
+save_changes: Save changes
+run_service: Run service each
+minutes: minutes
+hours: hours
+days: days
+add_domain: Add a domain
+edit_domain: Edit selected domain
+delete_domain: Delete selected domain
+lang: Language
+wrong_credentials: Wrong identifier/domain or password!
+execute_every: Execute the service every...
+add_new_zone: Add new zone
+current_ip: Current IP
+DOMINIO_INACTIVO: Domain selected is not active now.
+ERROR_DINAHOSTING_CANT_ANSWER: An error occured while accessing database. If the problem continues contact technical support.
+ERROR_LACKS_ADDRESS: Value required for the address.
+ERROR_LACKS_HOST: Value required for DNS Service.
+ERROR_LACKS_TYPE: Value required for type.
+ERROR_WRONG_CNAMESPECIAL: A CNAME for register @ cannot be configured.
+ERROR_WRONG_FQDN: A CNAME must point to another host or to a domain name ending in '.'
+ERROR_WRONG_HOST: Host is not valid.
+ERROR_WRONG_IGUALES: MX must be different.
+ERROR_WRONG_IP: IP is not valid.
+ERROR_WRONG_NODEFINIDO: MX must have its DNS Service configured
+ERROR_WRONG_TYPE: Type for DNS Service is incorrect.
+ERROR_WRONG_URL: URL is not valid.
+REGISTRADOR_CAIDO: DNS Services are configured. Communication error with register to establish correct DNS. Try again later.
+WRONGIP: Some IP introduced is not valid.
+WRONGMX: Some MX introduced is not valid.
+WRONGRULE: You have to select one of the options.
+zone: Zone
+update_required: The application will be updated to version XXX.
+update_must: The application should be updated to version XXX. Do you want to do it now?
+update_optional: The application could be updated to version XXX. Do you want to do it now?
+no_connection: Could not connect, please try again.
+save_file_as: Save file as...
+load_from_file: Load from file...
+wrong_pass: Wrong password!
+wrong_file: The configuration file does not match your username!
+domains: Domains

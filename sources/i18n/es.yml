@@ -1,0 +1,74 @@
+user: Usuario
+identifier: Identificador
+password: Contraseña
+domain: Dominio
+remember_id: Recordar identificador
+remember_pass: Recordar contraseña de acceso
+cancel: Cancelar
+accept: Aceptar
+newver: Comprobar si hay una nueva versión
+connect_auto: Conectar automáticamente al iniciar
+login: Acceder a 
+add_domain: Añadir dominio
+add_domain_msg: Dominio que quiere añadir para controlar con dinaIP
+host: Host
+type_label: Tipo
+value: Valor
+option: Opcion
+dynamic: IP dinamica
+delete: Borrar
+connect: Conectar
+save_conf: Exportar configuración
+load_conf: Importar configuración
+file: Archivo
+exit: Salir
+resume_service: Reanudar servicio
+stop_service: Detener servicio
+options: Opciones
+tools: Herramientas
+help: Ayuda
+about: Acerca de
+start_onboot: Ejecutar al iniciar window manager
+start_minimized: Iniciar minimizada 
+autodetect_ip: Autodetectar IPs dinámicas 
+discard_changes: Descartar cambios
+save_changes: Guardar cambios
+run_service: Ejecutar el servicio cada
+minutes: minutos
+hours: horas
+days: días
+add_domain: Añadir dominio
+edit_domain: Editar dominio
+delete_domain: Eliminar dominio
+lang: Idioma
+wrong_credentials: Incorrecto usario/dominio o contraseña!
+execute_every: Ejecutar el servicio cada...
+add_new_zone: Añadir nueva zona
+current_ip: IP actual
+DOMINIO_INACTIVO: El dominio seleccionado ya no está activo. 
+ERROR_DINAHOSTING_CANT_ANSWER: Ha occurido un error accediendo a la base de datos. Si el problema continúa ponte en contacto con soporte técnico.
+ERROR_LACKS_ADDRESS: Es necesario un valor para la dirección.
+ERROR_LACKS_HOST: Es necesario un valor para la zona.
+ERROR_LACKS_TYPE: No se tradujo porque nunca se daba.
+ERROR_WRONG_CNAMESPECIAL: No es posible configurar un CNAME del registro @.
+ERROR_WRONG_FQDN: Un CNAME debe apuntar a otro host o a un nombre de dominio acabado en '.'
+ERROR_WRONG_HOST: Host no válida.
+ERROR_WRONG_IGUALES: Los MX deben ser distintos.
+ERROR_WRONG_IP: IP no válida.
+ERROR_WRONG_NODEFINIDO: El MX tiene que tener su zona definida.
+ERROR_WRONG_TYPE: El tipo de lazona no escorrecto.
+ERROR_WRONG_URL: URL no válida
+REGISTRADOR_CAIDO: Zonas definidas. Error de comunicación con el registro para establecer DNS adecuadas. Inténtalo más tarde.
+WRONGIP: Alguna IP introducida no es válida.
+WRONGMX: Alguna MX introducida no es válida.
+WRONGRULE: Debes seleccionar una de las opciones.
+zone: Zona
+update_required: A continuación se va a actualizar la aplicación a la versión XXX.
+update_must: Debería actualizar la aplicación a la versión XXX, ¿Quieres hacerlo?
+update_optional: Se recomienda actualizar la aplicación a la versión XXX, ¿Quieres hacerlo?
+no_connection: No se ha podido conectar, inténtelo de nuevo.
+save_file_as: Guardar archivo como...
+load_from_file: Cargar desde archivo...
+wrong_pass: ¡Contraseña incorrecta!
+wrong_file: ¡El archivo no contiene su usuario!
+domains: Dominios

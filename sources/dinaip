@@ -1,0 +1,247 @@
+#!/usr/bin/ruby
+# encoding: UTF-8
+require 'rubygems'
+require 'gtk2'
+require 'xmlrpc/client'
+require 'yaml'
+require 'rexml/document'
+require 'open-uri'
+require 'pp'
+Dir.chdir(File.dirname(__FILE__))
+require './functions.rb'
+require './windows.rb'
+
+# VERSION #
+$VERSION = 1.0
+
+# Load YAML config
+load_config
+
+# Load translations
+if $c['lang'].nil?
+  $c['lang'] = 'es'
+  save
+end
+$t = YAML.load_file("i18n/#{$c['lang']}.yml")
+
+
+# manage pid files
+if File.exist?("#{ENV['HOME']}/.dinaip/dina.pid")
+  dina_pid = File.open("#{ENV['HOME']}/.dinaip/dina.pid").read.chomp.to_i
+  begin
+    Process.kill("SIGHUP", dina_pid)
+  rescue
+    File.delete("#{ENV['HOME']}/.dinaip/dina.pid") if File.exist?("#{ENV['HOME']}/.dinaip/dina.pid")
+  end
+end
+File.open("#{ENV['HOME']}/.dinaip/dina.pid", 'w') {|f| f << Process.pid}
+
+if File.exist?("#{ENV['HOME']}/.dinaip/pid")
+  $pid = File.open("#{ENV['HOME']}/.dinaip/pid").read.chomp.to_i
+end
+
+begin
+  kill $pid if $pid
+rescue
+  File.delete("#{ENV['HOME']}/.dinaip/pid") if File.exist?("#{ENV['HOME']}/.dinaip/pid")
+end
+# adjust the autoconnect feature and the connected variable
+# also start the cron module ($c['service'])
+if $c['connect']
+  $connected = true
+  if $c['service'].nil?
+    $c['service'] = true
+    save
+    cron
+  else
+    if $c['service'] == true
+      cron
+    end
+  end
+else
+  $connected = false
+end
+##
+
+def restart
+  pid = fork {
+    IO.popen("/usr/local/dinaip/dinaip")
+  }
+  Process.detach(pid)
+  Process.kill("SIGHUP", Process.pid)
+end
+
+#Signal.trap("HUP") { puts "dinaIP killed.. killing the service...\n"; kill $pid; Gtk.main_quit }
+
+
+### tray icon ###
+class Main
+  def initialize
+    $si = Gtk::StatusIcon.new
+    $si.pixbuf = Gdk::Pixbuf.new('dinaip.png')
+    $si.tooltip = "dinaIP #{$VERSION}"
+    $si.signal_connect("activate") { 
+      if $connected
+        if $list.visible?
+          $list.hide
+          if $options
+            $options.destroy if !$options.destroyed?
+          end
+          if $zone
+            $zone.destroy if !$zone.destroyed?
+          end
+        else
+          $list.show_all
+        end
+      else
+        if $login.visible?
+          $login.hide
+        else
+          $login.show_all
+        end
+      end
+    }
+    # exit button on tray icon
+    menu = Gtk::Menu.new
+    exit_item = Gtk::MenuItem.new($t['exit'])
+    menu.append(exit_item)
+    menu.show_all
+    $si.signal_connect("popup-menu") { |tray, button, time|
+      menu.popup(nil,nil,button,time)
+    }
+    exit_item.signal_connect("activate") {
+      kill $pid if $pid
+      Gtk.main_quit
+      false
+    }
+  end
+end
+# cursors
+$arrow = Gdk::Cursor.new(Gdk::Cursor::ARROW)
+$watch = Gdk::Cursor.new(Gdk::Cursor::WATCH)
+
+# edit zone #
+def edit_zone
+  zones = get_zones($selected['domain'])
+  if zones != false
+    # some vars that we need to feed later
+    hosts = []
+    types = []
+    addresses = []
+    doc = REXML::Document.new(zones)
+    doc.elements.each('interface-response/zone/host') do |e|
+      hosts << e.text
+    end
+    doc.elements.each('interface-response/zone/type') do |e|
+      types << e.text
+    end
+    doc.elements.each('interface-response/zone/address') do |e|
+      addresses << e.text
+    end
+    $zone_file = []
+    $zone_mx = []
+    for x in 0..hosts.count-1
+      case types[x]
+      when "A", "AAAA", "cnam", "CNAME", "fram", "FRAME", "redi", "r301", "TXT"
+        dynamic = false
+        if $c.include? "zone_file__#{$selected['domain']}"
+          if $c["zone_file__#{$selected['domain']}"]
+            $c["zone_file__#{$selected['domain']}"].map do |d|
+              if hosts[x] == d[:host]
+                dynamic = d[:dynamic]
+              end
+            end 
+          end
+        end
+        $zone_file << { :host => hosts[x], :type => types[x], :addr => addresses[x], :dynamic => dynamic }
+      else
+        $zone_mx << { :host => hosts[x], :type => types[x], :addr => addresses[x]}
+      end
+    end
+    $c["zone_file__#{$selected['domain']}"] = $zone_file
+    $c["zone_mx__#{$selected['domain']}"] = $zone_mx
+    save
+    $zone_num = $zone_file.count
+    $list.hide
+    $zone = Zone.new($selected["domain"], $zone_file)
+  else
+    $list.arrow
+    error_dialog($t['no_connection'])
+  end
+end
+# edit zone EOF #
+
+case $c['type']
+when 1
+  $domain = false
+else
+  $domain = true
+end
+
+if $c['connect'] and $c['id'] != '' and $c['pass'] != ''
+  conn
+  $res = login($c['id'], $c['pass'], $domain)
+  if !$res.nil?
+    ver = $res['version']['version'].to_f
+    url = $res['version']['url']
+    type = $res['version']['nivel_auth']
+  else
+    ver = $VERSION
+  end
+  $t['update_required'].gsub!(/XXX/) { ver }
+  $t['update_must'].gsub!(/XXX/) { ver }
+  $t['update_optional'].gsub!(/XXX/) { ver }
+  if $VERSION < ver && $c['newver']
+    if type != "REQUIRED"
+      dialog = Gtk::Dialog.new("Update", $login,
+                     Gtk::Dialog::MODAL | Gtk::Dialog::DESTROY_WITH_PARENT,
+                     [Gtk::Stock::OK, Gtk::Dialog::RESPONSE_ACCEPT],
+                     [Gtk::Stock::CANCEL, Gtk::Dialog::RESPONSE_REJECT])
+      if type == "MUST"
+        label = Gtk::Label.new($t['update_must'])
+      elsif type == "OPTIONAL"
+        label = Gtk::Label.new($t['update_optional'])
+      end
+      hbox = Gtk::HBox.new(false,10)
+      hbox.border_width = 10
+      hbox.pack_start_defaults(label)
+      dialog.vbox.add(hbox)
+      dialog.show_all
+      dialog.run do |response|
+        if response == Gtk::Dialog::RESPONSE_ACCEPT
+          update(url)
+        end
+        dialog.destroy
+      end
+    else
+      dialog = Gtk::Dialog.new(
+      "Update",
+      $login,
+      Gtk::Dialog::MODAL,
+      [Gtk::Stock::OK, Gtk::Dialog::RESPONSE_OK]
+      )
+      label = Gtk::Label.new($t['update_required'])
+      hbox = Gtk::HBox.new(false,10)
+      hbox.border_width = 10
+      hbox.pack_start_defaults(label)
+      dialog.vbox.add(hbox)
+      dialog.show_all
+      dialog.run
+      dialog.destroy
+      update(url)
+    end
+  else
+    $list = List.new
+    if $c['start_minimized'] == false
+      $list.show_all
+    end
+  end
+else
+  $login = Login.new()
+  $login.show_all
+end
+if __FILE__ == $0
+  Gtk.init
+  Main.new
+  Gtk.main
+end

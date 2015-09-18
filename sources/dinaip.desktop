@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=DinaIP
+Comment=Dinahosting
+Exec=/usr/local/dinaip/dinaip
+Icon=/usr/local/dinaip/dinaip.png
+Terminal=0
+Version=0.1
+Type=Application
+Encoding=UTF-8
+Categories=Network;Application;
